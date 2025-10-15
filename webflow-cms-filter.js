@@ -1,6 +1,6 @@
 /*!
- * webflow-cms-filter – single-file
- * usage: add data-filter-scope wrapper, buttons with data-filter, cards with data-filter-value
+ * webflow-cms-filter – multi-tag supported
+ * usage: add data-filter-scope wrapper, buttons with data-filter, cards with data-filter-value="tag1, tag2"
  */
 (function (global) {
   function ready(fn) {
@@ -19,8 +19,8 @@
       itemSelector: "[data-filter-value]",
       emptySelector: "[data-empty]",
       readURL: true,
-      defaultToAll: true, // shows all items by default
-      activeStyles: null, // now handled by attributes
+      defaultToAll: true,
+      activeStyles: null,
       createEmptyIfMissing: false,
       emptyText: "No items found.",
       ...opts
@@ -61,11 +61,21 @@
           }
         }
 
+        // ✅ Updated apply function — now supports multiple comma-separated tags
         function apply(filterRaw) {
           const filter = s(filterRaw);
           let visible = 0;
+
           items().forEach(el => {
-            const show = (filter === "all" || filter === "" || s(el.getAttribute("data-filter-value")) === filter);
+            const values = s(el.getAttribute("data-filter-value"))
+              .split(",")
+              .map(v => s(v.toLowerCase())); // normalize for case-insensitive match
+
+            const show =
+              filter === "all" ||
+              filter === "" ||
+              values.includes(filter.toLowerCase());
+
             el.style.display = show ? "" : "none";
             if (show) visible++;
           });
@@ -75,7 +85,7 @@
             emptyEl.style.display = none ? "" : "none";
             if (none) {
               emptyEl.textContent =
-                (filter && filter !== "all")
+                filter && filter !== "all"
                   ? `No items found for ${filter}.`
                   : cfg.emptyText;
             }
@@ -89,19 +99,27 @@
           apply(btn.getAttribute("data-filter"));
         });
 
-        // init
+        // ✅ Initialization
         let initFilter = null;
         if (cfg.readURL) {
           const q = new URLSearchParams(location.search);
-          initFilter = q.get("filter") || (location.hash.startsWith("#filter=") ? location.hash.slice(8) : null);
+          initFilter =
+            q.get("filter") ||
+            (location.hash.startsWith("#filter=")
+              ? location.hash.slice(8)
+              : null);
         }
 
         if (initFilter) {
-          const btn = buttons.find(b => s(b.getAttribute("data-filter")) === s(initFilter));
+          const btn = buttons.find(
+            b => s(b.getAttribute("data-filter")) === s(initFilter)
+          );
           setActive(btn || null);
           apply(initFilter);
         } else if (cfg.defaultToAll) {
-          const allBtn = buttons.find(b => s(b.getAttribute("data-filter")) === "all");
+          const allBtn = buttons.find(
+            b => s(b.getAttribute("data-filter")) === "all"
+          );
           if (allBtn) {
             setActive(allBtn);
             apply("all");
@@ -115,7 +133,6 @@
     });
   }
 
-  // auto-init with defaults; expose for custom init if needed
   init();
   global.WebflowCMSFilter = { init };
 })(window);
