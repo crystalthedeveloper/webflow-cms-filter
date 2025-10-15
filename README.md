@@ -7,6 +7,7 @@ The script shows/hides items, highlights the active button, supports multiple sc
 ---
 
 ## ✨ Features
+- 👉 Now supports **multiple tags per CMS item** (e.g. `blog, case-study`)
 - 🔘 Filter by any value (not just year)
 - 🧭 Optional deep-linking via `?filter=value` or `#filter=value`
 - 🧩 Multiple sections on one page using `data-filter-scope`
@@ -45,7 +46,7 @@ Wrap your buttons and CMS items in a single **scope**:
 
 ### 1️⃣ Include the script
 ```html
-<script src="https://cdn.jsdelivr.net/gh/crystalthedeveloper/webflow-cms-filter@v1.0.0/webflow-cms-filter.js" defer></script>
+<script src="https://cdn.jsdelivr.net/gh/crystalthedeveloper/webflow-cms-filter@v1.0.1/webflow-cms-filter.js" defer></script>
 ```
 It **auto-initializes** when the page loads — no setup needed.
 
@@ -94,6 +95,47 @@ If you want to initialize manually:
 
 You can have many independent filter groups on one page.  
 Just wrap each group in its own container with `data-filter-scope` — they’ll work separately.
+
+---
+
+## 🪄 Webflow CMS Setup (Plain Text Field for Multi-Tags)
+
+When using **Webflow CMS**, the easiest way to support **multiple filters per post** (like “Blog + Case Study”) is to use a **Plain Text field**.
+
+---
+
+### 🧱 Steps
+
+1️⃣ **Add a Plain Text field**  
+Go to your CMS Collection and add a new Plain Text field called something like `Filter Tags`.
+
+2️⃣ **Enter comma-separated tags**  
+For each post, enter your tags in a single line separated by commas, like this:
+
+```
+blog, case-study, webflow
+```
+
+3️⃣ **Bind the field to your collection item**  
+In your **Collection List Item**, add a custom attribute:
+
+```
+Name: data-filter-value
+Value: Filter Tags
+```
+
+(Bind it dynamically to your `Filter Tags` field.)
+
+---
+
+### ✅ Done!
+The script will automatically detect and match each tag individually — for example, a card with:
+
+```html
+data-filter-value="blog, case-study, webflow"
+```
+
+will appear when **any** of those filter buttons are clicked.
 
 ---
 
