@@ -42,11 +42,8 @@
 
         const items = () => [...scope.querySelectorAll(cfg.itemSelector)];
 
+        // ✅ updated: reads active styles from each button (not scope)
         function setActive(btn) {
-          const activeBg = scope.getAttribute("data-active-bg") || "#000";
-          const activeColor = scope.getAttribute("data-active-color") || "#fff";
-          const activeBorder = scope.getAttribute("data-active-border") || "";
-
           buttons.forEach(b => {
             b.removeAttribute("aria-pressed");
             b.style.cssText = b.dataset._prevStyle || "";
@@ -55,13 +52,18 @@
           if (btn) {
             btn.setAttribute("aria-pressed", "true");
             btn.dataset._prevStyle = btn.style.cssText;
-            btn.style.backgroundColor = activeBg;
-            btn.style.color = activeColor;
+
+            const activeBg = btn.getAttribute("data-active-bg");
+            const activeColor = btn.getAttribute("data-active-color");
+            const activeBorder = btn.getAttribute("data-active-border");
+
+            if (activeBg) btn.style.backgroundColor = activeBg;
+            if (activeColor) btn.style.color = activeColor;
             if (activeBorder) btn.style.border = activeBorder;
           }
         }
 
-        // ✅ Updated apply function — now supports multiple comma-separated tags
+        // ✅ multi-tag supported filtering
         function apply(filterRaw) {
           const filter = s(filterRaw);
           let visible = 0;
@@ -69,7 +71,7 @@
           items().forEach(el => {
             const values = s(el.getAttribute("data-filter-value"))
               .split(",")
-              .map(v => s(v.toLowerCase())); // normalize for case-insensitive match
+              .map(v => s(v.toLowerCase()));
 
             const show =
               filter === "all" ||
@@ -92,6 +94,7 @@
           }
         }
 
+        // ✅ click event listener
         scope.addEventListener("click", e => {
           const btn = e.target.closest(cfg.buttonSelector);
           if (!btn || !scope.contains(btn)) return;
@@ -99,7 +102,7 @@
           apply(btn.getAttribute("data-filter"));
         });
 
-        // ✅ Initialization
+        // ✅ initialization (URL or default)
         let initFilter = null;
         if (cfg.readURL) {
           const q = new URLSearchParams(location.search);
