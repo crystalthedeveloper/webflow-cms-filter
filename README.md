@@ -46,6 +46,7 @@ Wrap your buttons and CMS items in a single **scope**:
 
 ### 1️⃣ Include the script
 ```html
+<!-- Webflow cms Filter [by Crystal The Developer Inc.] -->
 <script src="https://cdn.jsdelivr.net/gh/crystalthedeveloper/webflow-cms-filter@v1.0.2/webflow-cms-filter.js" defer></script>
 ```
 It **auto-initializes** when the page loads — no setup needed.
